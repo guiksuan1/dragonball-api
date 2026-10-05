@@ -47,7 +47,7 @@ DB_HOST=db.SEU_PROJETO_ID.supabase.co
 DB_PORT=5432
 DB_NAME=postgres
 DB_USER=postgres
-DB_PASSWORD=sua_senha_segura
+DB_PASSWORD=DragonBall2026@FATEC
 DB_DIALECT=postgres
 DB_SSL=true
 ```
