@@ -1,6 +1,6 @@
-# 🐉 Dragon Ball API
+# 🐉 Dragon Ball API (LDW)
 
-API RESTful desenvolvida para a disciplina **LDW — Laboratório de Desenvolvimento Web**, com o tema **Universo Dragon Ball**. A aplicação permite o gerenciamento completo (CRUD) de guerreiros e personagens, com persistência relacional em PostgreSQL utilizando Sequelize ORM e documentação interativa via Swagger UI.
+API RESTful desenvolvida para a disciplina **LDW — Laboratório de Desenvolvimento Web**, com o tema **Universo Dragon Ball**. A aplicação permite o gerenciamento completo (CRUD) de guerreiros e personagens, com persistência relacional em **PostgreSQL (hospedado na nuvem - Supabase)** utilizando Sequelize ORM e documentação interativa via Swagger UI.
 
 ---
 
@@ -9,8 +9,7 @@ API RESTful desenvolvida para a disciplina **LDW — Laboratório de Desenvolvim
 - **Linguagem:** Node.js com TypeScript
 - **Framework Web:** Express
 - **ORM:** Sequelize
-- **Banco de Dados:** PostgreSQL
-- **Containerização:** Docker e Docker Compose
+- **Banco de Dados:** PostgreSQL (Hospedado no Supabase)
 - **Documentação:** Swagger UI (`swagger-ui-express` e `swagger-jsdoc`)
 - **Segurança e Utilitários:** CORS e Dotenv
 
@@ -20,7 +19,6 @@ API RESTful desenvolvida para a disciplina **LDW — Laboratório de Desenvolvim
 
 Antes de iniciar, certifique-se de ter instalado em sua máquina:
 - [Node.js](https://nodejs.org/) (versão 18 ou superior)
-- [Docker](https://www.docker.com/) e Docker Compose
 - [Git](https://git-scm.com/)
 - [pnpm](https://pnpm.io/) (ou npm)
 
@@ -30,43 +28,38 @@ Antes de iniciar, certifique-se de ter instalado em sua máquina:
 
 ### 1. Clonar o repositório
 ```bash
-git clone [https://github.com/guiksuan1/dragonball-api.git](https://github.com/guiksuan1/dragonball-api.git)
+git clone https://github.com/guiksuan1/dragonball-api.git
 cd dragonball-api
 ```
 
-### 2. Subir o banco de dados via Docker
-Inicie o container PostgreSQL:
-```bash
-docker compose up -d
-```
-
-### 3. Instalar dependências da API
+### 2. Instalar dependências da API
 Acesse a pasta do backend e instale os pacotes:
 ```bash
 cd backend
 pnpm install
 ```
 
-### 4. Configurar as variáveis de ambiente
-Crie o arquivo `.env` dentro da pasta `backend` com base no `.env.example`:
+### 3. Configurar as variáveis de ambiente
+Crie o arquivo `.env` dentro da pasta `backend` com base no `.env.example`. Substitua as credenciais pelas fornecidas pelo Supabase:
 ```env
 PORT=3000
-DB_HOST=localhost
+DB_HOST=db.SEU_PROJETO_ID.supabase.co
 DB_PORT=5432
-DB_NAME=dragonball_api
+DB_NAME=postgres
 DB_USER=postgres
-DB_PASSWORD=root
+DB_PASSWORD=sua_senha_segura
 DB_DIALECT=postgres
-DB_SSL=false
+DB_SSL=true
 ```
+*(Nota: O parâmetro `DB_SSL=true` é obrigatório para conexões seguras com o Supabase).*
 
-### 5. Executar as Migrations
-Crie as tabelas necessárias no banco:
+### 4. Executar as Migrations
+Crie as tabelas necessárias no banco de dados em nuvem:
 ```bash
 pnpm sequelize-cli db:migrate
 ```
 
-### 6. Iniciar a aplicação
+### 5. Iniciar a aplicação
 Inicie o servidor em modo de desenvolvimento:
 ```bash
 pnpm dev
