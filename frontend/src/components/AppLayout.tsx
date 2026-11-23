@@ -135,7 +135,7 @@ export function AppLayout() {
       </main>
 
       <footer className="border-t border-border bg-card/50 py-4 text-center text-xs text-muted-foreground">
-        Dragon Ball API • LDW & IEC (FATEC) — React, TypeScript & shadcn/ui
+        Dragon Ball API • LDW (FATEC) — React, TypeScript & shadcn/ui
       </footer>
     </div>
   );

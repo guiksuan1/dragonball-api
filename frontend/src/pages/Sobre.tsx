@@ -138,7 +138,7 @@ export function Sobre() {
               Stack Utilizada
             </CardTitle>
             <CardDescription>
-              Tecnologias aplicadas nas disciplinas LDW & IEC
+              Tecnologias aplicadas na disciplina LDW
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
@@ -150,8 +150,7 @@ export function Sobre() {
             <Badge variant="secondary">React Router DOM</Badge>
             <Badge variant="secondary">Sonner Toasts</Badge>
             <Badge variant="outline">Express + Sequelize</Badge>
-            <Badge variant="outline">PostgreSQL (Supabase)</Badge>
-            <Badge variant="outline">Docker + GitHub Actions</Badge>
+            <Badge variant="outline">PostgreSQL</Badge>
           </CardContent>
         </Card>
       </div>

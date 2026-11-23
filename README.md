@@ -1,21 +1,9 @@
-# 🐉 Dragon Ball Full-Stack (LDW & IEC)
+# 🐉 Dragon Ball Full-Stack — LDW (FATEC)
 
-Projeto Full-Stack desenvolvido para as disciplinas **LDW (Laboratório de Desenvolvimento Web)** e **IEC (Integração e Entrega Contínua)** da FATEC, com o tema **Universo Dragon Ball**.
+Projeto Full-Stack desenvolvido para a disciplina **LDW (Laboratório de Desenvolvimento Web)** da FATEC, com o tema **Universo Dragon Ball**:
 
-O repositório é organizado em formato de **monorepo** contendo:
-- **`backend/`** — API RESTful em Node.js, Express 5, TypeScript, Sequelize ORM, PostgreSQL (Supabase), Swagger UI, Dockerfile de produção e pipeline de CI/CD no GitHub Actions com Deploy Contínuo no Render.
-- **`frontend/`** — Aplicação SPA em React 19, TypeScript estrito, Vite, Tailwind CSS v4, **shadcn/ui**, React Router DOM e Sonner (toasts), com operações completas de CRUD conectadas à API.
-
----
-
-## 🌐 API em Produção (Render)
-
-> ⚠️ **Atualize o link abaixo após criar o Web Service no Render:**
-
-- **URL Base:** `https://SEU-SERVICO.onrender.com`
-- **Health Check:** `https://SEU-SERVICO.onrender.com/api/health`
-- **Personagens:** `https://SEU-SERVICO.onrender.com/api/personagens`
-- **Documentação Swagger:** `https://SEU-SERVICO.onrender.com/api-docs`
+- **`backend/` (AT1)** — API RESTful em Node.js, Express 5, TypeScript, Sequelize ORM, PostgreSQL e Swagger UI.
+- **`frontend/` (AT2)** — Aplicação SPA em React 19, TypeScript estrito, Vite, Tailwind CSS v4, **shadcn/ui**, React Router DOM e Sonner (toasts), com operações completas de CRUD conectadas à API.
 
 ---
 
@@ -23,19 +11,14 @@ O repositório é organizado em formato de **monorepo** contendo:
 
 ```text
 dragonball-api/
-├── .github/
-│   └── workflows/
-│       └── deploy.yml          # Pipeline CI/CD (CI + Docker Build + Deploy Hook Render)
 ├── backend/
 │   ├── src/
-│   │   ├── config/             # Conexão PostgreSQL/SSL e Swagger
+│   │   ├── config/             # Conexão PostgreSQL e Swagger
 │   │   ├── controllers/        # Regras de negócio CRUD
 │   │   ├── migrations/         # Migrations Sequelize
 │   │   ├── models/             # Modelo Personagem
 │   │   ├── routes/             # Rotas /api/personagens
 │   │   └── server.ts           # Servidor Express + /api/health
-│   ├── Dockerfile              # Build multi-stage (node:24-alpine)
-│   ├── .dockerignore
 │   └── .env.example
 ├── frontend/
 │   ├── src/
@@ -52,7 +35,7 @@ dragonball-api/
 │   │   ├── types/personagem.ts # Interfaces TypeScript
 │   │   └── App.tsx             # React Router DOM + <Toaster />
 │   └── .env.example
-└── docker-compose.yml
+└── docker-compose.yml          # PostgreSQL local (opcional)
 ```
 
 ---
@@ -62,7 +45,7 @@ dragonball-api/
 - [Node.js](https://nodejs.org/) (v20+ / v24 recomendado)
 - [pnpm](https://pnpm.io/) (ou npm)
 - [Git](https://git-scm.com/)
-- [Docker](https://www.docker.com/) *(opcional, para build/execução em contêiner)*
+- PostgreSQL (local ou em nuvem, como Supabase)
 
 ---
 
@@ -83,15 +66,15 @@ pnpm install
 Crie o arquivo `backend/.env` com base em `backend/.env.example`:
 ```env
 PORT=3000
-DB_HOST=seu-host.supabase.com
+DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=postgres
+DB_NAME=dragonball_api
 DB_USER=postgres
 DB_PASSWORD=SUA_SENHA_AQUI
 DB_DIALECT=postgres
-DB_SSL=true
+DB_SSL=false
 ```
-*(Use `DB_SSL=true` para bancos em nuvem como Supabase/Render ou `DB_SSL=false` para PostgreSQL local via `docker-compose.yml`.)*
+*(Use `DB_SSL=true` caso esteja utilizando um banco PostgreSQL em nuvem, como o Supabase.)*
 
 Execute as migrations e inicie o servidor:
 ```bash
@@ -117,25 +100,6 @@ Inicie o servidor de desenvolvimento Vite:
 pnpm dev
 ```
 A interface React estará disponível em `http://localhost:5173`.
-
----
-
-## 🐳 Execução do Backend com Docker
-
-A partir da raiz do projeto:
-```bash
-docker build -t dragonball-api ./backend
-docker run --env-file ./backend/.env -p 3000:3000 dragonball-api
-```
-
----
-
-## ⚙️ Esteira de CI/CD (GitHub Actions)
-
-O workflow [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) é executado em todo `push` na branch `main`:
-1. **CI:** instala dependências, valida tipagem (`tsc --noEmit`) e compila o TypeScript (`pnpm run build`).
-2. **CD (Docker):** valida a construção da imagem Docker de produção (`docker build`).
-3. **Deploy no Render:** dispara o Deploy Hook via `curl -X POST` usando o segredo `RENDER_DEPLOY_HOOK_URL` (com **Auto-Deploy** desativado no Render) e valida retorno HTTP `200`/`201`.
 
 ---
 
