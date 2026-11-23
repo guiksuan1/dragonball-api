@@ -1,30 +1,72 @@
-# 🐉 Dragon Ball API (LDW)
+# 🐉 Dragon Ball Full-Stack (LDW & IEC)
 
-API RESTful desenvolvida para a disciplina **LDW — Laboratório de Desenvolvimento Web**, com o tema **Universo Dragon Ball**. A aplicação permite o gerenciamento completo (CRUD) de guerreiros e personagens, com persistência relacional em **PostgreSQL (hospedado na nuvem - Supabase)** utilizando Sequelize ORM e documentação interativa via Swagger UI.
+Projeto Full-Stack desenvolvido para as disciplinas **LDW (Laboratório de Desenvolvimento Web)** e **IEC (Integração e Entrega Contínua)** da FATEC, com o tema **Universo Dragon Ball**.
+
+O repositório é organizado em formato de **monorepo** contendo:
+- **`backend/`** — API RESTful em Node.js, Express 5, TypeScript, Sequelize ORM, PostgreSQL (Supabase), Swagger UI, Dockerfile de produção e pipeline de CI/CD no GitHub Actions com Deploy Contínuo no Render.
+- **`frontend/`** — Aplicação SPA em React 19, TypeScript estrito, Vite, Tailwind CSS v4, **shadcn/ui**, React Router DOM e Sonner (toasts), com operações completas de CRUD conectadas à API.
 
 ---
 
-## 🛠 Tecnologias Utilizadas
+## 🌐 API em Produção (Render)
 
-- **Linguagem:** Node.js com TypeScript
-- **Framework Web:** Express
-- **ORM:** Sequelize
-- **Banco de Dados:** PostgreSQL (Hospedado no Supabase)
-- **Documentação:** Swagger UI (`swagger-ui-express` e `swagger-jsdoc`)
-- **Segurança e Utilitários:** CORS e Dotenv
+> ⚠️ **Atualize o link abaixo após criar o Web Service no Render:**
+
+- **URL Base:** `https://SEU-SERVICO.onrender.com`
+- **Health Check:** `https://SEU-SERVICO.onrender.com/api/health`
+- **Personagens:** `https://SEU-SERVICO.onrender.com/api/personagens`
+- **Documentação Swagger:** `https://SEU-SERVICO.onrender.com/api-docs`
+
+---
+
+## 🗂 Estrutura do Repositório
+
+```text
+dragonball-api/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml          # Pipeline CI/CD (CI + Docker Build + Deploy Hook Render)
+├── backend/
+│   ├── src/
+│   │   ├── config/             # Conexão PostgreSQL/SSL e Swagger
+│   │   ├── controllers/        # Regras de negócio CRUD
+│   │   ├── migrations/         # Migrations Sequelize
+│   │   ├── models/             # Modelo Personagem
+│   │   ├── routes/             # Rotas /api/personagens
+│   │   └── server.ts           # Servidor Express + /api/health
+│   ├── Dockerfile              # Build multi-stage (node:24-alpine)
+│   ├── .dockerignore
+│   └── .env.example
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── ui/             # Componentes shadcn/ui (Card, Button, Input, Dialog, Table, Badge, Sonner...)
+│   │   │   ├── AppLayout.tsx   # Layout compartilhado com barra de navegação
+│   │   │   ├── PersonagemDialog.tsx
+│   │   │   └── DeletePersonagemDialog.tsx
+│   │   ├── lib/utils.ts
+│   │   ├── pages/
+│   │   │   ├── Dashboard.tsx   # Listagem CRUD, métricas, busca, Loading e Empty States
+│   │   │   └── Sobre.tsx       # Status /api/health e documentação de endpoints
+│   │   ├── services/api.ts     # Cliente HTTP (Fetch API)
+│   │   ├── types/personagem.ts # Interfaces TypeScript
+│   │   └── App.tsx             # React Router DOM + <Toaster />
+│   └── .env.example
+└── docker-compose.yml
+```
 
 ---
 
 ## 📋 Pré-requisitos
 
-Antes de iniciar, certifique-se de ter instalado em sua máquina:
-- [Node.js](https://nodejs.org/) (versão 18 ou superior)
-- [Git](https://git-scm.com/)
+- [Node.js](https://nodejs.org/) (v20+ / v24 recomendado)
 - [pnpm](https://pnpm.io/) (ou npm)
+- [Git](https://git-scm.com/)
+- [Docker](https://www.docker.com/) *(opcional, para build/execução em contêiner)*
 
 ---
 
-## 🚀 Como Executar o Projeto
+## 🚀 Como Executar Localmente (Backend + Frontend)
 
 ### 1. Clonar o repositório
 ```bash
@@ -32,46 +74,68 @@ git clone https://github.com/guiksuan1/dragonball-api.git
 cd dragonball-api
 ```
 
-### 2. Instalar dependências da API
-Acesse a pasta do backend e instale os pacotes:
+### 2. Configurar e executar o Backend (Terminal 1)
 ```bash
 cd backend
 pnpm install
 ```
 
-### 3. Configurar as variáveis de ambiente
-Crie o arquivo `.env` dentro da pasta `backend` com base no `.env.example`. Substitua as credenciais pelas fornecidas pelo Supabase:
+Crie o arquivo `backend/.env` com base em `backend/.env.example`:
 ```env
 PORT=3000
-DB_HOST=db.SEU_PROJETO_ID.supabase.co
+DB_HOST=seu-host.supabase.com
 DB_PORT=5432
 DB_NAME=postgres
 DB_USER=postgres
-DB_PASSWORD=DragonBall2026@FATEC
+DB_PASSWORD=SUA_SENHA_AQUI
 DB_DIALECT=postgres
 DB_SSL=true
 ```
-*(Nota: O parâmetro `DB_SSL=true` é obrigatório para conexões seguras com o Supabase).*
+*(Use `DB_SSL=true` para bancos em nuvem como Supabase/Render ou `DB_SSL=false` para PostgreSQL local via `docker-compose.yml`.)*
 
-### 4. Executar as Migrations
-Crie as tabelas necessárias no banco de dados em nuvem:
+Execute as migrations e inicie o servidor:
 ```bash
 pnpm sequelize-cli db:migrate
+pnpm dev
+```
+A API estará disponível em `http://localhost:3000` (Swagger em `http://localhost:3000/api-docs`).
+
+### 3. Configurar e executar o Frontend SPA (Terminal 2)
+Em outro terminal, a partir da raiz do projeto:
+```bash
+cd frontend
+pnpm install
 ```
 
-### 5. Iniciar a aplicação
-Inicie o servidor em modo de desenvolvimento:
+Crie o arquivo `frontend/.env` com base em `frontend/.env.example`:
+```env
+VITE_API_URL=http://localhost:3000
+```
+
+Inicie o servidor de desenvolvimento Vite:
 ```bash
 pnpm dev
 ```
-A API estará disponível em: `http://localhost:3000`
+A interface React estará disponível em `http://localhost:5173`.
 
 ---
 
-## 📖 Documentação Interativa (Swagger UI)
+## 🐳 Execução do Backend com Docker
 
-Com o servidor em execução, acesse a documentação interativa pelo navegador:
-👉 **`http://localhost:3000/api-docs`**
+A partir da raiz do projeto:
+```bash
+docker build -t dragonball-api ./backend
+docker run --env-file ./backend/.env -p 3000:3000 dragonball-api
+```
+
+---
+
+## ⚙️ Esteira de CI/CD (GitHub Actions)
+
+O workflow [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) é executado em todo `push` na branch `main`:
+1. **CI:** instala dependências, valida tipagem (`tsc --noEmit`) e compila o TypeScript (`pnpm run build`).
+2. **CD (Docker):** valida a construção da imagem Docker de produção (`docker build`).
+3. **Deploy no Render:** dispara o Deploy Hook via `curl -X POST` usando o segredo `RENDER_DEPLOY_HOOK_URL` (com **Auto-Deploy** desativado no Render) e valida retorno HTTP `200`/`201`.
 
 ---
 
@@ -79,6 +143,8 @@ Com o servidor em execução, acesse a documentação interativa pelo navegador:
 
 | Método | Rota | Descrição | Status Sucesso |
 |---|---|---|---|
+| **GET** | `/api/health` | Verificação de integridade (Health Check) | `200 OK` |
+| **GET** | `/api-docs` | Documentação interativa Swagger UI | `200 OK` |
 | **GET** | `/api/personagens` | Lista todos os guerreiros | `200 OK` |
 | **GET** | `/api/personagens/:id` | Busca guerreiro por ID | `200 OK` |
 | **POST** | `/api/personagens` | Cadastra um guerreiro | `201 Created` |

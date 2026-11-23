@@ -8,9 +8,14 @@ const options = {
       version: '1.0.0',
       description: 'API RESTful de Personagens do Universo Dragon Ball',
     },
-    servers: [{ url: 'http://localhost:3000' }],
+    servers: [{ url: '/' }],
   },
-  apis: ['./src/routes/*.ts', './src/controllers/*.ts'], // Caminho para encontrar as anotações
+  apis: [
+    './src/routes/*.ts',
+    './src/controllers/*.ts',
+    './dist/routes/*.js',
+    './dist/controllers/*.js',
+  ], // Caminho para encontrar as anotações em dev e produção
 };
 
 export const swaggerSpec = swaggerJSDoc(options);

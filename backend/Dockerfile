@@ -1,0 +1,53 @@
+# ==============================================================================
+# Estágio 1: Build da Aplicação
+# ==============================================================================
+FROM node:24-alpine AS builder
+
+WORKDIR /app
+
+# Instala o pnpm globalmente
+RUN npm install -g pnpm@latest
+
+# Desativa restrições estritas de scripts de build de dependências
+RUN pnpm config set strict-dep-builds false
+
+# Copia os manifestos de dependências
+COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml* ./
+
+# Instala todas as dependências (incluindo devDependencies para compilação)
+RUN pnpm install --frozen-lockfile
+
+# Copia configuração do TypeScript e código-fonte
+COPY tsconfig.json ./
+COPY src ./src
+
+# Compila o TypeScript gerando o bundle JavaScript em dist/
+RUN pnpm run build
+
+# Remove as devDependencies mantendo apenas o necessário para produção
+RUN pnpm prune --prod
+
+# ==============================================================================
+# Estágio 2: Imagem Final de Execução (Produção enxuta)
+# ==============================================================================
+FROM node:24-alpine AS runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV PORT=3000
+
+# Cria usuário sem privilégios de root para segurança
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nodejs
+
+# Copia apenas o necessário do estágio de build
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+
+USER nodejs
+
+EXPOSE 3000
+
+CMD ["node", "dist/server.js"]
